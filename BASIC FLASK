@@ -1,0 +1,7 @@
+basic-flask-app/
+│
+├── app.py            # Main Flask app
+├── templates/
+│   └── index.html    # Frontend template
+├── requirements.txt  # List of dependencies
+└── README.md         # Documentation for GitHub
