@@ -1,0 +1,146 @@
+pip install flask rasa nltk
+
+customer-support-chatbot/
+│
+├── app.py                     # Main Flask app
+├── nlp_model.py               # NLP Model using Rasa (or any NLP platform you choose)
+├── templates/
+│   └── index.html             # Frontend for the chatbot
+├── static/
+│   └── style.css              # Optional: For custom styling
+├── README.md                  # Documentation for GitHub
+└── requirements.txt           # List of dependencies
+from flask import Flask, render_template, request, jsonify
+from nlp_model import get_bot_response
+
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+@app.route("/get_response", methods=["POST"])
+def get_response():
+    user_message = request.form["message"]
+    bot_response = get_bot_response(user_message)
+    return jsonify({"response": bot_response})
+
+if __name__ == "__main__":
+    app.run(debug=True)
+def get_bot_response(user_message):
+    responses = {
+        "order status": "Please provide your order number.",
+        "delivery time": "Your order will be delivered in 3-5 business days.",
+        "return policy": "You can return the product within 30 days of purchase.",
+    }
+    
+    # Basic keyword matching for now (replace with NLP)
+    if "order" in user_message.lower():
+        return responses["order status"]
+    elif "delivery" in user_message.lower():
+        return responses["delivery time"]
+    elif "return" in user_message.lower():
+        return responses["return policy"]
+    else:
+        return "I'm sorry, I don't understand. Please contact support."
+
+# TODO: Integrate Rasa or Dialogflow for advanced NLP
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Support Chatbot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="chat-container">
+        <h1>Customer Support Chatbot</h1>
+        <div class="chat-box" id="chat-box"></div>
+        <input type="text" id="user-input" placeholder="Ask me anything..." onkeydown="if (event.keyCode == 13) {sendMessage();}">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        function sendMessage() {
+            let userMessage = document.getElementById('user-input').value;
+            let chatBox = document.getElementById('chat-box');
+            
+            chatBox.innerHTML += "<p><b>You:</b> " + userMessage + "</p>";
+
+            fetch('/get_response', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `message=${userMessage}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                chatBox.innerHTML += "<p><b>Bot:</b> " + data.response + "</p>";
+                document.getElementById('user-input').value = "";
+            });
+        }
+    </script>
+</body>
+</html>
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+.chat-container {
+    width: 50%;
+    margin: auto;
+    border: 2px solid #ccc;
+    padding: 20px;
+    margin-top: 50px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+#chat-box {
+    height: 300px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    overflow-y: scroll;
+    margin-bottom: 10px;
+}
+
+#user-input {
+    width: 80%;
+    padding: 10px;
+}
+
+button {
+    padding: 10px;
+    cursor: pointer;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+# Customer Support Chatbot
+
+This is a simple customer support chatbot built using Python, Flask, and a basic NLP model. It can handle common customer queries like order status, delivery time, and return policy.
+
+## Features
+- Basic response system
+- Flask-based web interface
+- Expandable with NLP models like Rasa or Dialogflow
+- Easily customizable and scalable
+
+## Requirements
+- Python 3.x
+- Flask
+- Rasa (Optional for advanced NLP)
+
+## Setup
+1. Clone the repository.
+2. Install the dependencies:
+
+   ```bash
+   pip install -r requirements.txt
+python app.py
+
